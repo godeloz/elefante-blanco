@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Anatomía de un elefante blanco</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#0d1b1e;
+  --ink-soft:#33474b;
+  --paper:#ffffff;
+  --stone:#a89e8c;
+  --teal:#1abcb0;
+  --gold:#f5c842;
+  --rust:#c1502e;
+  --env:#ffffff;
+  --line:rgba(13,27,30,.14);
+  --font-display:'Bebas Neue', Impact, sans-serif;
+  --font-body:'Playfair Display', Georgia, serif;
+  --font-mono:'IBM Plex Mono', monospace;
+}
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;}
+body{
+  font-family:var(--font-body);
+  color:var(--ink);
+  background:var(--env);
+  min-height:100vh; min-height:100dvh;
+  overflow-x:hidden;
+  -webkit-font-smoothing:antialiased;
+  transition:background-color 1100ms ease;
+}
+#veil{
+  position:fixed; inset:0; z-index:0; pointer-events:none;
+  background:radial-gradient(ellipse 130% 70% at 50% 0%, rgba(255,255,255,.75) 0%, rgba(255,255,255,0) 70%);
+}
+#app{ position:relative; z-index:1; padding:26px 18px 90px; }
+@media(min-width:820px){ #app{ padding:52px 24px 110px; } }
+.wrap{ width:100%; max-width:620px; margin:0 auto; }
+
+h1,h2,h3{ font-family:var(--font-display); font-weight:400; letter-spacing:.02em; margin:0 0 .35em; line-height:1.04; }
+h1{ font-size:clamp(2.2rem,8vw,3.1rem); }
+h2{ font-size:clamp(1.7rem,6vw,2.3rem); }
+h3{ font-size:1.35rem; }
+p{ line-height:1.62; margin:0 0 1.05em; font-size:1rem; }
+.eyebrow{ font-family:var(--font-mono); font-size:.7rem; letter-spacing:.16em; text-transform:uppercase; color:var(--ink-soft); margin:0 0 8px; opacity:.75;}
+.lead{ font-size:1.1rem; }
+.quote{ font-style:italic; font-size:1.12rem; line-height:1.5; border-left:3px solid var(--ink); padding-left:16px; margin:22px 0; }
+.center{ text-align:center; }
+.screen{ animation:fade .6s ease both; }
+@keyframes fade{ from{opacity:0; transform:translateY(10px);} to{opacity:1; transform:translateY(0);} }
+
+.btn{
+  font-family:var(--font-mono); font-size:.82rem; letter-spacing:.06em; text-transform:uppercase;
+  background:transparent; color:var(--ink); border:1.5px solid var(--ink); border-radius:999px;
+  padding:14px 28px; cursor:pointer; transition:all .22s ease; -webkit-tap-highlight-color:transparent;
+}
+.btn:hover{ background:var(--ink); color:#fff; }
+.btn:focus-visible{ outline:2px solid var(--rust); outline-offset:3px; }
+.btn:disabled{ opacity:.3; cursor:not-allowed; }
+.btn:disabled:hover{ background:transparent; color:var(--ink); }
+.btn-row{ display:flex; gap:12px; justify-content:center; flex-wrap:wrap; margin-top:28px; }
+.btn-ghost{ border-style:dashed; font-size:.74rem; padding:10px 18px; }
+
+.mark{ width:56px; height:56px; margin:0 auto 20px; display:block; }
+
+/* ---------- symptom list ---------- */
+.list{ margin-top:26px; }
+.item{ border-top:1px solid var(--line); }
+.item:last-child{ border-bottom:1px solid var(--line); }
+.item-head{
+  display:flex; align-items:center; gap:14px; width:100%; text-align:left;
+  background:none; border:none; padding:17px 4px; cursor:pointer; color:var(--ink);
+  font-family:var(--font-display); font-size:1.3rem; letter-spacing:.02em; line-height:1.1;
+  -webkit-tap-highlight-color:transparent;
+}
+.item-head:focus-visible{ outline:2px solid var(--rust); outline-offset:2px; }
+.item-ico{ flex:0 0 34px; width:34px; height:34px; color:var(--ink); opacity:.7; transition:opacity .2s;}
+.item.open .item-ico, .item.seen .item-ico{ opacity:1; }
+.item-num{ font-family:var(--font-mono); font-size:.7rem; opacity:.5; flex:0 0 auto; }
+.item-title{ flex:1; }
+.chev{ flex:0 0 auto; font-family:var(--font-mono); font-size:1.1rem; opacity:.5; transition:transform .25s ease; }
+.item.open .chev{ transform:rotate(45deg); }
+.item-body{ display:none; padding:0 4px 24px 52px; animation:fade .35s ease both; }
+.item.open .item-body{ display:block; }
+.item-body p{ font-size:.97rem; }
+.seen-dot{ width:6px; height:6px; border-radius:50%; background:var(--ink); opacity:.35; }
+
+.case{ border-left:3px solid var(--rust); padding:2px 0 2px 15px; margin-top:16px; }
+.case-tag{ font-family:var(--font-mono); font-size:.65rem; letter-spacing:.14em; text-transform:uppercase; color:var(--rust); margin:0 0 7px; }
+.case-head{ font-family:var(--font-display); font-size:1.12rem; line-height:1.15; margin:0 0 8px; }
+.case p{ margin:0; font-size:.92rem; opacity:.82; }
+
+.counter{ font-family:var(--font-mono); font-size:.72rem; letter-spacing:.1em; text-transform:uppercase; opacity:.6; text-align:center; margin-top:22px;}
+
+/* ---------- resolve ---------- */
+.bar{ display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:22px; }
+.timer{
+  font-family:var(--font-mono); font-size:.9rem; letter-spacing:.04em;
+  border:1.5px solid var(--ink); border-radius:999px; padding:6px 15px; transition:all .4s ease;
+}
+.timer.over{ border-color:var(--rust); color:var(--rust); }
+.card{
+  border:1.5px solid var(--ink); border-radius:18px; padding:22px 20px; margin-bottom:8px;
+  background:rgba(255,255,255,.4);
+}
+.card .eyebrow{ color:var(--rust); opacity:1; }
+.card h3{ margin-bottom:12px; }
+.card p{ margin:0; font-size:.98rem; }
+.reveal{ border:1px dashed var(--line); border-radius:14px; padding:0; margin:10px 0 4px; overflow:hidden;}
+.reveal-btn{
+  width:100%; background:none; border:none; padding:13px 18px; text-align:left; cursor:pointer;
+  font-family:var(--font-mono); font-size:.74rem; letter-spacing:.08em; text-transform:uppercase; color:var(--ink); opacity:.7;
+}
+.reveal-body{ display:none; padding:0 18px 18px; }
+.reveal.open .reveal-body{ display:block; animation:fade .3s ease both; }
+.reveal-body p{ font-size:.93rem; }
+.q{ font-family:var(--font-display); font-size:1.3rem; margin:28px 0 14px; }
+.option{
+  display:block; width:100%; text-align:left; border:1.5px solid var(--line); border-radius:14px;
+  background:rgba(255,255,255,.45); padding:16px 18px; margin-bottom:11px; cursor:pointer;
+  font-family:var(--font-body); font-size:.97rem; line-height:1.45; color:var(--ink); transition:all .2s ease;
+}
+.option:hover{ border-color:var(--ink); }
+.option:focus-visible{ outline:2px solid var(--rust); outline-offset:2px; }
+.option.chosen{ border-color:var(--ink); border-width:2.5px; background:rgba(255,255,255,.85); }
+.fb{ border-left:3px solid var(--ink); padding-left:16px; margin:20px 0 0; animation:fade .4s ease both; }
+.fb p{ margin:0; font-style:italic; font-size:.98rem; }
+.hint{ font-family:var(--font-mono); font-size:.68rem; letter-spacing:.06em; text-transform:uppercase; opacity:.5; text-align:center; margin-top:14px;}
+
+/* ---------- thermometer ---------- */
+.thermo{ margin:0 0 22px; }
+.thermo.big{ margin:26px 0 4px; }
+.thermo-top{ display:flex; align-items:baseline; justify-content:space-between; gap:10px; margin-bottom:7px; }
+.thermo-lab{ font-family:var(--font-mono); font-size:.66rem; letter-spacing:.14em; text-transform:uppercase; opacity:.6; }
+.thermo-val{ font-family:var(--font-mono); font-size:.72rem; letter-spacing:.08em; text-transform:uppercase; font-weight:500; }
+.thermo-track{
+  height:11px; border:1.5px solid var(--ink); border-radius:8px; overflow:hidden;
+  background:rgba(255,255,255,.45);
+}
+.thermo.big .thermo-track{ height:16px; border-radius:10px; }
+.thermo-fill{ height:100%; border-radius:6px 0 0 6px; transition:width 700ms cubic-bezier(.3,.8,.4,1), background 700ms ease; }
+
+/* ---------- why toggle ---------- */
+.why{
+  border:1.5px solid currentColor; background:transparent; border-radius:50%;
+  width:20px; height:20px; font-family:var(--font-mono); font-size:.68rem; line-height:1;
+  cursor:pointer; margin-left:8px; vertical-align:middle; padding:0;
+  transition:all .2s ease;
+}
+.why:hover{ background:rgba(13,27,30,.07); }
+.why.on{ background:rgba(13,27,30,.12); border-width:2px; }
+.why:focus-visible{ outline:2px solid var(--rust); outline-offset:2px; }
+.why-body{ display:none; }
+.why-body.open{ display:block; animation:fade .3s ease both; }
+.why-body p{
+  font-size:.87rem !important; font-style:italic; opacity:.75 !important;
+  border-left:2px solid var(--line); padding-left:12px; margin:10px 0 12px !important;
+}
+.dx-choice{ opacity:.6; font-size:.87rem; font-style:italic; }
+
+/* ---------- diagnostic ---------- */
+.dx-item{ border-top:1px solid var(--line); padding:22px 0; display:flex; gap:16px; align-items:flex-start; }
+.dx-item:last-of-type{ border-bottom:1px solid var(--line); }
+.dx-ico{ flex:0 0 40px; width:40px; height:40px; }
+.dx-main{ flex:1; min-width:0; }
+.dx-name{ font-family:var(--font-display); font-size:1.28rem; line-height:1.1; margin:0 0 4px; }
+.badge{
+  display:inline-block; font-family:var(--font-mono); font-size:.62rem; letter-spacing:.12em;
+  text-transform:uppercase; padding:4px 10px; border-radius:999px; border:1.5px solid currentColor; margin-bottom:10px;
+}
+.dx-main p{ font-size:.94rem; margin:0 0 .7em; opacity:.85; }
+.dx-main p:last-child{ margin-bottom:0; }
+.dx-sub{ font-family:var(--font-mono); font-size:.66rem; letter-spacing:.1em; text-transform:uppercase; opacity:.55; margin-bottom:6px !important; }
+.tally{ display:flex; gap:10px; flex-wrap:wrap; justify-content:center; margin:20px 0 6px; }
+.tally span{ font-family:var(--font-mono); font-size:.68rem; letter-spacing:.08em; text-transform:uppercase; border:1.5px solid currentColor; border-radius:999px; padding:6px 13px; }
+.foot{ font-family:var(--font-mono); font-size:.66rem; letter-spacing:.12em; text-transform:uppercase; opacity:.45; text-align:center; margin-top:52px; }
+
+@media (prefers-reduced-motion: reduce){ *{ animation:none !important; transition:none !important; } }
+</style>
+</head>
+<body>
+<div id="veil"></div>
+<div id="app"></div>
+<script>
+/* ========================= DATA ========================= */
+const S=[
+{sym:"Defecto congénito",ant:"Mirada multiaxial",
+ orig:"Nadie hizo el estudio de factibilidad antes de comprometer el presupuesto. Se arranca sin saber si hay plata suficiente para terminar, equipar y sostener lo que se está construyendo.",
+ ch:"El megahospital de 500 millones de dólares que iba a ser el más grande de Latinoamérica hoy está abandonado",
+ cs:"En Sopó, cerca de Bogotá, el Hospital Internacional de Alta Tecnología se levanta como una estructura monumental que alguna vez prometió revolucionar la salud del país, y hoy yace abandonado.",
+ antText:"El antídoto es reunir, antes de comprometer un peso, las lecturas financiera, política y territorial en la misma mesa. Un solo eje nunca alcanza para diagnosticar. Necesita un equipo que cruce esas lecturas desde el principio, no informes separados que nadie pone a conversar entre sí.",
+ dx:"Un proyecto sano nace de varias lecturas cruzadas en la misma mesa, con autoridad compartida, antes de que se comprometa el primer peso.",
+ op:[
+  {t:"Formar, antes de aprobar el presupuesto, un comité con poder de decisión conjunta que reúna finanzas, el área política y representantes del territorio afectado.",e:100,f:"Crea la mesa cruzada real, con autoridad compartida — el proyecto arranca viendo los tres ejes a la vez."},
+  {t:"Pedir a finanzas, al área legal y a comunicaciones que entreguen, cada uno, su propio informe de viabilidad antes de aprobar el proyecto.",e:60,f:"Toca los mismos ejes, pero produce justo lo que el antídoto advertía: informes separados que nadie termina de cruzar."},
+  {t:"Contratar una consultora externa reconocida para que avale la viabilidad del proyecto.",e:15,f:"Una sola voz, aunque prestigiosa, sigue siendo un único eje con estampado de autoridad."}]},
+
+{sym:"Insuficiencia de mando",ant:"Liderazgo complementario",
+ orig:"Lo lidera alguien sin la competencia técnica que el tamaño del proyecto exige. La ambición del proyecto supera la experiencia de quien lo conduce.",
+ ch:"Inaugurada dos veces, la planta siderúrgica del Mutún nunca produjo un kilo de acero",
+ cs:"Una auditoría técnica en Bolivia identificó fallas que van desde el diseño original de la planta hasta la ejecución de las obras civiles, con más de 300 observaciones técnicas sin resolver.",
+ antText:"Ningún líder alcanza solo para conducir un proyecto que supera su propia experiencia técnica. Se necesita reconocer a tiempo esa frontera y rodearse de las competencias que faltan, en vez de sostener la autoridad solo porque el cargo la exige.",
+ dx:"Un proyecto sano tiene, dentro del núcleo que decide, la competencia técnica que su tamaño exige — con voto real, no solo con derecho a opinar.",
+ op:[
+  {t:"Incorporar formalmente al equipo de decisión a alguien con la experiencia técnica específica que el proyecto exige, con voto real sobre el rumbo.",e:100,f:"Crea la competencia que falta, con poder de decidir, no solo de opinar."},
+  {t:"Contratar una asesoría externa que revise el proyecto y entregue recomendaciones periódicas.",e:60,f:"Suena prudente, pero la decisión final sigue en las mismas manos; la asesoría opina, no decide."},
+  {t:"Pedir a quien lidera el proyecto que tome un curso de capacitación en gestión de proyectos.",e:15,f:"Atiende el síntoma en abstracto, no la brecha concreta que el proyecto necesita resuelta ya."}]},
+
+{sym:"Fiebre de inauguración",ant:"Disciplina sin atajos",
+ orig:"Nace atado a un evento con fecha fija. El calendario político manda sobre la planeación técnica, y una vez pasado el evento, la razón de ser original se evapora.",
+ ch:"El estadio de 300 millones de dólares que solo vio cuatro partidos después del Mundial",
+ cs:"La Arena da Amazônia se construyó en Manaos para el Mundial de Brasil 2014, en una ciudad sin ningún equipo de primera división que pudiera llenarla después.",
+ antText:"Sostener el mismo estándar de calidad y verificación haya o no una fecha con público mirando. La fecha del evento no debería decidir nunca si algo está listo.",
+ dx:"Un proyecto sano fija primero los criterios técnicos que debe cumplir, y solo después la fecha — con permiso explícito de mover la fecha si el criterio no se cumple.",
+ op:[
+  {t:"Establecer, antes de fijar la fecha de lanzamiento, los criterios técnicos mínimos que deben cumplirse — y aceptar moverla si no se cumplen.",e:100,f:"Invierte el orden: el criterio manda sobre el calendario."},
+  {t:"Sumar personal y turnos extra en las semanas previas al evento para acelerar lo que falta.",e:60,f:"Resuelve la prisa, no la causa: seguir dejando que la fecha decida qué se sacrifica."},
+  {t:"Comunicar una versión reducida del proyecto para la fecha, y prometer completarlo después.",e:15,f:"Mantiene la fecha como la que manda; solo cambia qué se le entrega."}]},
+
+{sym:"Ego inflamado",ant:"Capacidad de soltar protagonismo",
+ orig:"El ego de quien lo impulsa queda atado al proyecto. Detenerlo se lee como una derrota personal, no como una corrección técnica.",
+ ch:"El monumento del Bicentenario que terminó costando casi el triple de lo presupuestado",
+ cs:"La Estela de Luz, construida para los festejos del Bicentenario de México, costó 192% más de lo programado según la Auditoría Superior de la Federación, y terminó rebautizada por la opinión pública como \"el monumento a la corrupción\".",
+ antText:"Ceder el centro de la escena a tiempo — dejar que otra persona, sin protagonismo previo, comunique o conduzca una decisión difícil, en vez de sostenerse siempre como el rostro visible.",
+ dx:"Un proyecto sano puede cambiar de rumbo sin que eso se lea como la derrota personal de nadie; el protagonismo circula en vez de concentrarse.",
+ op:[
+  {t:"Pedir a alguien del equipo sin protagonismo previo en el proyecto que sea quien comunique la decisión.",e:100,f:"Suena pasivo, pero es literalmente soltar protagonismo."},
+  {t:"Explicar en detalle los datos y argumentos que justifican la decisión.",e:60,f:"Corrige el argumento, pero sigue siendo la misma persona quien necesita ser quien lo explica."},
+  {t:"Asumir personalmente la decisión y comunicarla ante toda la organización.",e:15,f:"Suena a liderazgo fuerte, pero pone al mismo protagonismo en el centro."}]},
+
+{sym:"Orfandad administrativa",ant:"Memoria institucional y traducción",
+ orig:"Cambia el gobierno, o cambia la gerencia, y el proyecto pierde a su dueño. Se corta la cadena de responsabilidad, y sin nadie a cargo, el proyecto queda flotando.",
+ ch:"El hospital más grande de Sudamérica que un golpe de Estado dejó a medio construir",
+ cs:"La obra en Villa Lugano fue retomada durante las presidencias de Perón; tras el golpe militar de 1955 el edificio quedó abandonado.",
+ antText:"Que el proyecto no dependa de que una sola persona lo recuerde o lo defienda. Necesita quedar documentado y traducido para que cualquier gestión nueva pueda retomarlo sin reconstruirlo desde cero.",
+ dx:"Un proyecto sano sobrevive al cambio de quien lo dirige: sus decisiones y motivos quedan documentados y se entregan formalmente a quien llega.",
+ op:[
+  {t:"Crear un documento vivo de continuidad — objetivos, decisiones y motivos — entregado formalmente a cualquier nueva gestión antes de asumir.",e:100,f:"El conocimiento sobrevive al cambio de persona."},
+  {t:"Pedir a quien lideró el proyecto que quede disponible como consultor informal tras dejar el cargo.",e:60,f:"Vuelve a depender de una sola persona, justo lo que el antídoto pide dejar de hacer."},
+  {t:"Redactar un informe final de cierre de gestión, como es costumbre institucional.",e:15,f:"Cumple el trámite, pero un informe archivado no traduce nada activamente."}]},
+
+{sym:"Desnutrición presupuestal",ant:"Protección de largo plazo",
+ orig:"Nunca se presupuestó el mantenimiento posterior a la construcción. Se calcula el dinero para levantar la obra, no para sostenerla.",
+ ch:"55 hospitales paralizados en Perú: la plata para construirlos existe, la plata para equiparlos no",
+ cs:"Un hospital terminado, pero vacío, también es una obra paralizada — solo que con las paredes ya pintadas, resume un informe de la Contraloría peruana.",
+ antText:"Presupuestar no solo lo que cuesta construir, sino lo que cuesta sostener después — mantenimiento, operación, actualización — desde el día en que se aprueba el proyecto.",
+ dx:"Un proyecto sano llega con su operación financiada: el presupuesto de sostenerlo se aprueba junto al de construirlo, no después.",
+ op:[
+  {t:"Exigir, como condición para aprobar el proyecto, un presupuesto separado y garantizado para su primer año de operación y mantenimiento.",e:100,f:"Protege el después con la misma fuerza que protege el arranque."},
+  {t:"Incluir una línea de \"imprevistos\" dentro del presupuesto de construcción.",e:60,f:"Destina algo de plata, pero mezclada e informal — la primera que se recorta."},
+  {t:"Aprobar el proyecto y resolver el presupuesto de mantenimiento más adelante.",e:15,f:"Repite exactamente el patrón que produjo el problema."}]},
+
+{sym:"Contratación parasitaria",ant:"Transparencia sostenida bajo presión",
+ orig:"La obra se convierte en vehículo para extraer valor, no en un fin en sí misma. Contratos que se estiran, se amplían, se prorrogan una y otra vez.",
+ ch:"\"Si aquí hay un monumento a la corrupción, es Yacyretá\"",
+ cs:"Lo dijo el propio presidente argentino en 1990, sobre la represa binacional con Paraguay que tardó más de tres décadas en completarse.",
+ antText:"Que alguien tenga la función explícita, y el respaldo institucional, de auditar los contratos mientras la obra avanza — no solo al final.",
+ dx:"Un proyecto sano se audita mientras avanza, por alguien independiente y con acceso permanente, no cuando el dinero ya se gastó.",
+ op:[
+  {t:"Asignar una auditoría independiente con acceso permanente a los contratos, reportando directamente a la máxima instancia de decisión.",e:100,f:"Tiene la independencia y el acceso real para frenar a tiempo."},
+  {t:"Pedir informes financieros trimestrales al equipo que ejecuta el proyecto.",e:60,f:"Genera información, pero pedida a quien tiene el incentivo de no mostrar lo incómodo."},
+  {t:"Contratar una auditoría externa al finalizar la obra.",e:15,f:"Llega cuando el dinero ya se gastó."}]},
+
+{sym:"Diagnóstico equivocado",ant:"Escucha real del territorio",
+ orig:"Se construyó lo que se podía anunciar, no lo que el lugar necesitaba. La desconexión entre el proyecto y la realidad social o territorial donde aterriza.",
+ ch:"600 mil casas del Infonavit están abandonadas en México",
+ cs:"Se construyeron lejos de las fuentes de trabajo, del transporte y de los servicios básicos — sin, según su propio director, ninguna regla de calidad urbana.",
+ antText:"Diseñar el proyecto conversando con quienes efectivamente lo van a usar, antes de decidir qué se va a construir.",
+ dx:"Un proyecto sano se diseña con quienes lo van a usar, y esa conversación ocurre antes de decidir qué se construye, no después de inaugurarlo.",
+ op:[
+  {t:"Realizar consultas estructuradas con los usuarios finales antes del diseño definitivo, incorporando sus respuestas como criterio de decisión.",e:100,f:"Deja que la necesidad real defina el diseño."},
+  {t:"Hacer una encuesta de satisfacción una vez terminado el proyecto.",e:60,f:"Escucha demasiado tarde para cambiar nada de este proyecto."},
+  {t:"Basar el diseño en proyectos similares que funcionaron bien en otros lugares.",e:15,f:"Razonable en abstracto, pero sigue sin preguntarle a quien va a usarlo."}]},
+
+{sym:"Inmunodeficiencia institucional",ant:"Cultivo del disenso",
+ orig:"No hay instituciones lo bastante fuertes para frenarlo a tiempo. Cuando ya muestra señales de fracaso, nadie tiene la autoridad de decir basta.",
+ ch:"1.753 elefantes blancos: la radiografía que la Contraloría le hizo a las obras públicas de Colombia",
+ cs:"El organismo de control identificó más de mil proyectos categorizados como elefantes blancos u obras inconclusas, por varios billones de pesos, repartidos por todo el país.",
+ antText:"Instalar, dentro del equipo, la posibilidad real de decir \"esto no está funcionando\" antes de que sea tarde — sin costo personal para quien lo dice.",
+ dx:"Un proyecto sano tiene a alguien con mandato explícito de cuestionarlo, y hacerlo no le cuesta la posición. El disenso está instalado, no tolerado.",
+ op:[
+  {t:"Nombrar explícitamente a alguien con mandato de cuestionar el proyecto, garantizando que hacerlo no afecte su posición.",e:100,f:"Disenso real, con protección real."},
+  {t:"Crear un comité de seguimiento que revise mensualmente el avance.",e:60,f:"Agrega vigilancia, sin garantizar que decir \"hay que parar\" sea seguro."},
+  {t:"Pedir informes de avance más frecuentes al equipo ejecutor.",e:15,f:"Más información no sirve si nadie tiene permiso de frenar con ella."}]},
+
+{sym:"Atrofia de propósito",ant:"Revisión periódica del propósito",
+ orig:"Incluso terminado, se usa distinto de lo que se diseñó — o no se usa. Muchos de estos proyectos no son utilizados en los términos de su diseño original.",
+ ch:"El estadio más caro de Brasil hoy es un estacionamiento para 400 buses",
+ cs:"El Mané Garrincha, construido en Brasilia para el Mundial 2014, terminó funcionando como playón de colectivos en vez de cancha de fútbol.",
+ antText:"Volver, cada cierto tiempo, a comparar el proyecto con la necesidad original que lo justificó — no solo con el avance de obra.",
+ dx:"Un proyecto sano se mide contra el propósito que lo justificó, no contra el cronograma — y quien lo revisa tiene autoridad para redirigirlo.",
+ op:[
+  {t:"Establecer revisiones periódicas donde se compare el proyecto contra su propósito original, con autoridad real para redirigirlo o detenerlo.",e:100,f:"El propósito, no el cronograma, es la vara de medida."},
+  {t:"Medir el avance con indicadores de cumplimiento de obra y presupuesto ejecutado.",e:60,f:"Mide si se construye bien, no si todavía sirve."},
+  {t:"Esperar a que el proyecto esté terminado para evaluar si cumplió su objetivo.",e:15,f:"Convierte la evaluación en autopsia, no en chequeo."}]},
+
+{sym:"Identidad enquistada",ant:"Costo personal asumido a propósito",
+ orig:"El costo hundido se disfraza de identidad institucional. Mientras más se invirtió, más cuesta admitir el error.",
+ ch:"Le tomó ochenta años y una demolición manual, piso por piso, cerrar la historia del Elefante Blanco original",
+ cs:"El edificio de Villa Lugano fue demolido completamente de forma manual en 2018, tras décadas sin cumplir ninguna función.",
+ antText:"Aceptar el costo reputacional de admitir el error a tiempo, en vez de heredarlo a la siguiente gestión.",
+ dx:"Un proyecto sano puede cerrarse sin que la organización sienta que se cierra a sí misma: la identidad institucional no depende de un solo proyecto.",
+ op:[
+  {t:"Comunicar el cierre o rediseño como una corrección basada en evidencia, asumiendo la responsabilidad sin buscar a quién culpar.",e:100,f:"Absorbe el costo real sin transferirlo."},
+  {t:"Postergar la decisión hasta un cambio de gestión que pueda anunciarla como algo heredado.",e:60,f:"Traslada el costo a otra persona en vez de asumirlo."},
+  {t:"Mantener el proyecto activo mientras se busca una narrativa que justifique los resultados obtenidos.",e:15,f:"Evita el costo, y con eso, evita también la cura."}]}
+];
+
+const ICO_SICK=[
+`<path d="M24 6 L40 15 L40 33 L24 42 L8 33 L8 15 Z"/><path d="M24 8 L19 20 L28 24 L18 34 L23 40"/>`,
+`<path d="M10 22 L14 14 L20 20 L24 12 L28 20 L34 14 L38 22 L36 28 L12 28 Z" transform="rotate(-12 24 20)"/><line x1="13" y1="31" x2="15" y2="39"/>`,
+`<rect x="20" y="6" width="8" height="26" rx="4"/><circle cx="24" cy="38" r="6"/><line x1="24" y1="11" x2="24" y2="31"/>`,
+`<circle cx="24" cy="20" r="13"/><line x1="24" y1="33" x2="21" y2="43"/><line x1="24" y1="33" x2="27" y2="43"/>`,
+`<circle cx="13" cy="24" r="6"/><line x1="19" y1="24" x2="27" y2="24"/><line x1="32" y1="24" x2="40" y2="24"/>`,
+`<ellipse cx="24" cy="26" rx="16" ry="8"/><path d="M13 21 L19 27 L14 33"/>`,
+`<line x1="24" y1="6" x2="24" y2="42"/><ellipse cx="31" cy="18" rx="6" ry="3" transform="rotate(35 31 18)"/>`,
+`<circle cx="24" cy="24" r="15"/><line x1="24" y1="24" x2="34" y2="14"/><line x1="30" y1="9" x2="38" y2="17"/>`,
+`<path d="M24 6 L38 12 L38 26 C38 36 24 42 24 42 C24 42 10 36 10 26 L10 12 Z"/><circle cx="24" cy="24" r="5"/>`,
+`<line x1="14" y1="40" x2="34" y2="12"/><line x1="22" y1="30" x2="14" y2="26"/><line x1="27" y1="21" x2="20" y2="15"/>`,
+`<path d="M10 24 C10 14 38 14 38 24 C38 34 10 34 10 24 Z"/><circle cx="24" cy="24" r="6" fill="currentColor" stroke="none"/>`
+];
+const ICO_WELL=[
+`<path d="M24 6 L40 15 L40 33 L24 42 L8 33 L8 15 Z"/><line x1="24" y1="10" x2="24" y2="24"/><line x1="13" y1="30" x2="24" y2="24"/><line x1="35" y1="30" x2="24" y2="24"/><circle cx="24" cy="24" r="2.6"/>`,
+`<path d="M10 19 L14 11 L20 17 L24 9 L28 17 L34 11 L38 19 L36 25 L12 25 Z"/><path d="M9 31 C9 27 15 27 17 31"/><path d="M31 31 C33 27 39 27 39 31"/><path d="M15 36 C19 32 29 32 33 36"/>`,
+`<rect x="20" y="6" width="8" height="26" rx="4"/><circle cx="24" cy="38" r="6"/><line x1="24" y1="19" x2="24" y2="25"/>`,
+`<path d="M13 35 C13 27 35 27 35 35"/><circle cx="24" cy="15" r="9"/><line x1="24" y1="24" x2="24" y2="31"/>`,
+`<circle cx="12" cy="24" r="6"/><line x1="18" y1="24" x2="38" y2="24"/><line x1="30" y1="24" x2="30" y2="31"/><line x1="36" y1="24" x2="36" y2="31"/>`,
+`<ellipse cx="24" cy="24" rx="16" ry="8"/><path d="M24 24 C24 32 20 36 24 43 C28 36 24 32 24 24"/>`,
+`<line x1="24" y1="6" x2="24" y2="33"/><ellipse cx="24" cy="39" rx="9" ry="4.5"/><circle cx="24" cy="39" r="2"/>`,
+`<circle cx="24" cy="24" r="15"/><path d="M24 24 C19 16 26 11 24 5"/>`,
+`<path d="M24 6 L38 12 L38 26 C38 36 24 42 24 42 C24 42 10 36 10 26 L10 12 Z"/><rect x="19" y="27" width="10" height="13" rx="1.5"/>`,
+`<line x1="14" y1="40" x2="34" y2="12"/><circle cx="34" cy="12" r="3"/><path d="M34 12 C39 8 41 12 37 15"/>`,
+`<path d="M10 24 C10 14 38 14 38 24 C38 34 10 34 10 24 Z"/><path d="M17 24 L31 24" stroke-dasharray="2 3"/>`
+];
+
+/* ========================= STATE ========================= */
+const st={ screen:'l1', seen:new Set(), order:[], i:0, res:{}, sel:null, t:0, handle:null };
+
+/* ========================= COLOR & HEALTH ========================= */
+const STOPS=[{v:0,c:'#ffffff'},{v:30,c:'#cfc7b6'},{v:55,c:'#8fded8'},{v:78,c:'#ece3c0'},{v:100,c:'#f5c842'}];
+const hex2rgb=h=>[1,3,5].map(i=>parseInt(h.substr(i,2),16));
+const hx=v=>Math.round(Math.max(0,Math.min(255,v))).toString(16).padStart(2,'0');
+function col(v){
+  v=Math.max(0,Math.min(100,v));
+  for(let i=0;i<STOPS.length-1;i++){
+    const a=STOPS[i],b=STOPS[i+1];
+    if(v>=a.v&&v<=b.v){
+      const t=(v-a.v)/(b.v-a.v),c0=hex2rgb(a.c),c1=hex2rgb(b.c);
+      return '#'+hx(c0[0]+(c1[0]-c0[0])*t)+hx(c0[1]+(c1[1]-c0[1])*t)+hx(c0[2]+(c1[2]-c0[2])*t);
+    }
+  }
+  return STOPS[STOPS.length-1].c;
+}
+const STATUS=[
+  {min:70,label:'Saludable',c:'#b8860b'},
+  {min:40,label:'Estable',c:'#0d8b82'},
+  {min:20,label:'En riesgo',c:'#8a7f6c'},
+  {min:0, label:'Crítico', c:'#c1502e'}
+];
+const statusOf=v=>STATUS.find(s=>v>=s.min);
+/* cumulative health: every answer adds life, the best ones add much more */
+const health=()=>Object.values(st.res).reduce((a,r)=>a+r.eff,0)/(S.length*100)*100;
+const VITALS=[
+  {min:78,label:'Saludable',c:'#b8860b'},
+  {min:55,label:'En recuperación',c:'#0d8b82'},
+  {min:30,label:'Frágil',c:'#8a7f6c'},
+  {min:0, label:'Crítica',c:'#c1502e'}
+];
+const vitalOf=v=>VITALS.find(x=>v>=x.min);
+function paint(){
+  const c=col(health());
+  document.documentElement.style.setProperty('--env', c);
+  document.body.style.backgroundColor=c;
+}
+function eff(base,sec){
+  const floor={100:70,60:30,15:10}[base];
+  if(sec<=120) return base;
+  return Math.max(floor, base - Math.floor((sec-120)/30)*10);
+}
+const fmt=s=>Math.floor(s/60)+':'+String(s%60).padStart(2,'0');
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[a[i],a[j]]=[a[j],a[i]];}return a;};
+const svg=(inner,cls)=>`<svg class="${cls}" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${inner}</svg>`;
+const app=()=>document.getElementById('app');
+
+/* why a quality landed in its state */
+function whyText(r){
+  if(!r) return 'Sin respuesta registrada.';
+  const base={100:'Elegiste la acción que traduce el antídoto por completo.',
+              60:'Elegiste una acción que alivia el síntoma a medias: atiende la superficie, pero repite el error que el propio antídoto advertía.',
+              15:'Elegiste una acción razonable en apariencia, que no toca el mecanismo que sostiene el síntoma.'}[r.base];
+  const lost=r.base-r.eff;
+  const time= lost>0
+    ? ` Resolviste en ${fmt(r.secs)}, por encima del límite de dos minutos: la efectividad bajó ${lost} ${lost===1?'punto':'puntos'}.`
+    : ` Resolviste en ${fmt(r.secs)}, dentro del límite, sin pérdida por demora.`;
+  return base+time;
+}
+
+/* ========================= SCREENS ========================= */
+function l1(){
+  app().innerHTML=`<div class="screen wrap center">
+    ${svg(ICO_WELL[0],'mark')}
+    <p class="eyebrow">La leyenda</p>
+    <p class="lead">Hace varios siglos, en Tailandia, cuando un rey quería arruinar a un noble sin matarlo, le regalaba un elefante blanco.</p>
+    <p>El animal era sagrado: no podía trabajar, no podía venderse, no podía sacrificarse. Solo podía comer — y comer mucho — hasta llevar a la ruina a quien tuviera la desgracia de recibirlo.</p>
+    <p class="quote">El regalo nunca fue el elefante. El regalo fue la trampa de no poder deshacerse de él.</p>
+    <div class="btn-row"><button class="btn" data-go="l2">Seguir</button></div>
+  </div>`;
+}
+function l2(){
+  app().innerHTML=`<div class="screen wrap center">
+    <p class="eyebrow">La historia real</p>
+    <p class="lead">En Buenos Aires, en Villa Lugano, hubo un edificio de doce pisos que llevó ese apodo durante ochenta años.</p>
+    <p>Iba a ser el hospital más grande de Latinoamérica. Empezó a construirse en 1935, quedó trunco tras un golpe de Estado en 1955, y terminó habitado por cientos de familias hasta que lo demolieron a mano, piso por piso, en 2018.</p>
+    <p class="quote">Desde entonces, elefante blanco nombra cualquier proyecto imposible de sostener e imposible de abandonar.</p>
+    <p>Once síntomas explican cómo se llega hasta ahí.</p>
+    <div class="btn-row"><button class="btn" data-go="map">Ver la anatomía</button></div>
+  </div>`;
+}
+function map(){
+  app().innerHTML=`<div class="screen wrap">
+    <div class="center">
+      <p class="eyebrow">Radiografía</p>
+      <h2>Anatomía de un elefante blanco</h2>
+      <p>Abrí cada síntoma en el orden que quieras.</p>
+    </div>
+    <div class="list">${S.map((s,i)=>`
+      <div class="item ${st.seen.has(i)?'seen':''}" data-i="${i}">
+        <button class="item-head" aria-expanded="false">
+          ${svg(ICO_SICK[i],'item-ico')}
+          <span class="item-title">${s.sym}</span>
+          <span class="chev">+</span>
+        </button>
+        <div class="item-body">
+          <p>${s.orig}</p>
+          <div class="case">
+            <p class="case-tag">Caso real</p>
+            <p class="case-head">${s.ch}</p>
+            <p>${s.cs}</p>
+          </div>
+        </div>
+      </div>`).join('')}</div>
+    <p class="counter"><span id="cnt">${st.seen.size}</span> de 11 revisados</p>
+    <div class="btn-row"><button class="btn" data-go="start">Revivir al elefante</button></div>
+  </div>`;
+  app().querySelectorAll('.item-head').forEach(h=>{
+    h.onclick=()=>{
+      const item=h.parentElement, open=item.classList.contains('open');
+      app().querySelectorAll('.item').forEach(x=>{x.classList.remove('open');x.querySelector('.item-head').setAttribute('aria-expanded','false');});
+      if(!open){
+        item.classList.add('open','seen');
+        h.setAttribute('aria-expanded','true');
+        st.seen.add(parseInt(item.dataset.i));
+        document.getElementById('cnt').textContent=st.seen.size;
+        setTimeout(()=>item.scrollIntoView({behavior:'smooth',block:'nearest'}),80);
+      }
+    };
+  });
+}
+function start(){ st.order=shuffle(S.map((_,i)=>i)); st.i=0; st.res={}; go('res'); }
+
+function thermo(){
+  const v=health(), vit=vitalOf(v);
+  return `<div class="thermo">
+    <div class="thermo-top">
+      <span class="thermo-lab">Salud del proyecto</span>
+      <span class="thermo-val" style="color:${vit.c}">${vit.label} · ${Math.round(v)}%</span>
+    </div>
+    <div class="thermo-track"><div class="thermo-fill" style="width:${Math.max(1.5,v)}%;background:${col(Math.max(12,v))}"></div></div>
+  </div>`;
+}
+
+function res(){
+  clearInterval(st.handle); st.t=0; st.sel=null;
+  const idx=st.order[st.i], s=S[idx], opts=shuffle(s.op);
+  app().innerHTML=`<div class="screen wrap">
+    <div class="bar">
+      <span class="eyebrow" style="margin:0;">Síntoma ${st.i+1} de 11</span>
+      <span class="timer" id="tm">0:00</span>
+    </div>
+    <div id="th">${thermo()}</div>
+    <div class="card">
+      <p class="eyebrow">El antídoto</p>
+      <h3>${s.ant}</h3>
+      <p>${s.antText}</p>
+    </div>
+    <div class="reveal" id="rv">
+      <button class="reveal-btn" id="rvb">+ Volver a leer el síntoma</button>
+      <div class="reveal-body">
+        <p style="font-family:var(--font-display);font-size:1.2rem;margin:0 0 6px;">${s.sym}</p>
+        <p>${s.orig}</p>
+        <div class="case"><p class="case-tag">Caso real</p><p class="case-head">${s.ch}</p><p>${s.cs}</p></div>
+      </div>
+    </div>
+    <p class="q">¿Cuál acción traduce mejor este antídoto?</p>
+    <div id="ops">${opts.map((o,k)=>`<button class="option" data-k="${k}">${o.t}</button>`).join('')}</div>
+    <div id="fb"></div>
+    <div class="btn-row"><button class="btn" id="cont" disabled>Continuar</button></div>
+    <p class="hint">Podés cambiar tu elección antes de continuar</p>
+  </div>`;
+
+  const tm=document.getElementById('tm');
+  st.handle=setInterval(()=>{ st.t++; tm.textContent=fmt(st.t); tm.classList.toggle('over',st.t>120); },1000);
+
+  const rv=document.getElementById('rv');
+  document.getElementById('rvb').onclick=()=>{
+    rv.classList.toggle('open');
+    document.getElementById('rvb').textContent=(rv.classList.contains('open')?'− Ocultar el síntoma':'+ Volver a leer el síntoma');
+  };
+
+  app().querySelectorAll('.option').forEach(b=>{
+    b.onclick=()=>{
+      app().querySelectorAll('.option').forEach(x=>x.classList.remove('chosen'));
+      b.classList.add('chosen');
+      st.sel=opts[+b.dataset.k];
+      document.getElementById('fb').innerHTML=`<div class="fb"><p>${st.sel.f}</p></div>`;
+      document.getElementById('cont').disabled=false;
+    };
+  });
+
+  document.getElementById('cont').onclick=()=>{
+    if(!st.sel) return;
+    clearInterval(st.handle);
+    st.res[idx]={base:st.sel.e, eff:eff(st.sel.e, st.t), secs:st.t, text:st.sel.t};
+    paint();
+    document.getElementById('th').innerHTML=thermo();
+    setTimeout(()=>{ st.i++; st.i>=S.length ? go('dx') : res(); }, 620);
+  };
+}
+
+function dx(){
+  const v=health(), vit=vitalOf(v);
+  const tally={Saludable:0,Estable:0,'En riesgo':0,'Crítico':0};
+  S.forEach((_,i)=>{ tally[statusOf(st.res[i]?st.res[i].eff:0).label]++; });
+  app().innerHTML=`<div class="screen wrap">
+    <div class="center">
+      <p class="eyebrow">Diagnóstico</p>
+      <h2>La nueva anatomía</h2>
+      <p>Once cualidades que definen a los proyectos que no se convierten en elefantes blancos — y el estado en que quedó cada una según lo que elegiste.</p>
+    </div>
+    <div class="thermo big">
+      <div class="thermo-top">
+        <span class="thermo-lab">Salud final del proyecto</span>
+        <span class="thermo-val" style="color:${vit.c}">${vit.label} · ${Math.round(v)}%</span>
+      </div>
+      <div class="thermo-track"><div class="thermo-fill" style="width:${Math.max(1.5,v)}%;background:${col(Math.max(12,v))}"></div></div>
+    </div>
+    <div class="tally">
+      ${Object.entries(tally).filter(([,n])=>n>0).map(([k,n])=>{
+        const c=STATUS.find(s=>s.label===k).c;
+        return `<span style="color:${c}">${n} ${k}</span>`;}).join('')}
+    </div>
+    <div style="margin-top:22px;">
+    ${S.map((s,i)=>{
+      const r=st.res[i], e=r?r.eff:0, stt=statusOf(e);
+      return `<div class="dx-item">
+        <div style="flex:0 0 40px;color:${stt.c}">${svg(ICO_WELL[i],'dx-ico')}</div>
+        <div class="dx-main">
+          <p class="dx-sub">Contra ${s.sym.toLowerCase()}</p>
+          <h3 class="dx-name">${s.ant}</h3>
+          <span class="badge" style="color:${stt.c}">${stt.label}</span><button class="why" data-why="${i}" aria-label="Por qué quedó en este estado" style="color:${stt.c}">?</button>
+          <div class="why-body" id="why${i}"><p>${whyText(r)}</p></div>
+          <p>${s.dx}</p>
+          <p class="dx-choice">Tu decisión: ${r?r.text:'—'}</p>
+        </div>
+      </div>`;
+    }).join('')}
+    </div>
+    <div class="btn-row">
+      <button class="btn" id="dl">Descargar la ficha</button>
+      <button class="btn" data-go="reset">Volver a empezar</button>
+    </div>
+    <p class="foot">Liderazgo en escena · Elefante blanco</p>
+  </div>`;
+  paint();
+  app().querySelectorAll('.why').forEach(b=>{
+    b.onclick=()=>{ document.getElementById('why'+b.dataset.why).classList.toggle('open'); b.classList.toggle('on'); };
+  });
+  document.getElementById('dl').onclick=downloadFicha;
+}
+
+/* ---------- downloadable sheet ---------- */
+function downloadFicha(){
+  const v=health(), vit=vitalOf(v);
+  const rows=S.map((s,i)=>{
+    const r=st.res[i], e=r?r.eff:0, stt=statusOf(e);
+    return `<tr>
+      <td class="q"><strong>${s.ant}</strong><br><em>Contra ${s.sym.toLowerCase()}</em></td>
+      <td class="s" style="color:${stt.c}">${stt.label}</td>
+      <td class="d"><p>${s.dx}</p><p class="ch">Tu decisión: ${r?r.text:'—'}</p><p class="wh">${whyText(r)}</p></td>
+    </tr>`;}).join('');
+  const doc=`<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8">
+<title>Ficha · Anatomía de un elefante blanco</title>
+<style>
+body{font-family:Georgia,serif;color:#0d1b1e;max-width:820px;margin:40px auto;padding:0 24px;line-height:1.55;}
+h1{font-size:1.9rem;margin:0 0 4px;letter-spacing:.01em;}
+.sub{font-size:.8rem;letter-spacing:.14em;text-transform:uppercase;color:#7a7266;margin:0 0 26px;}
+.bar{height:16px;border:1.5px solid #0d1b1e;border-radius:9px;overflow:hidden;margin:8px 0 6px;}
+.bar span{display:block;height:100%;background:${col(Math.max(12,v))};width:${Math.max(1.5,v)}%;}
+.vital{font-size:.95rem;margin-bottom:28px;}
+table{width:100%;border-collapse:collapse;}
+td{border-top:1px solid #d9d3c7;padding:14px 8px;vertical-align:top;font-size:.9rem;}
+td.q{width:26%;} td.s{width:14%;font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;}
+td.d p{margin:0 0 6px;} .ch{font-style:italic;color:#5a5348;} .wh{font-size:.82rem;color:#7a7266;}
+em{color:#7a7266;font-size:.8rem;}
+footer{margin-top:34px;font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;color:#a29884;}
+@media print{body{margin:0;}}
+</style></head><body>
+<h1>Anatomía de un elefante blanco</h1>
+<p class="sub">Ficha de diagnóstico · ${new Date().toLocaleDateString('es-CO',{day:'2-digit',month:'long',year:'numeric'})}</p>
+<p class="vital"><strong>Salud final del proyecto: ${vit.label} · ${Math.round(v)}%</strong></p>
+<div class="bar"><span></span></div>
+<table>${rows}</table>
+<footer>Liderazgo en escena · Elefante blanco</footer>
+</body></html>`;
+  const blob=new Blob([doc],{type:'text/html;charset=utf-8'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download='ficha-elefante-blanco.html';
+  document.body.appendChild(a); a.click();
+  setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); },500);
+}
+
+/* ========================= ROUTER ========================= */
+function go(s){ st.screen=s; render(); }
+function render(){
+  paint();
+  window.scrollTo({top:0,behavior:'instant'});
+  ({l1,l2,map,res,dx})[st.screen]();
+}
+document.addEventListener('click',e=>{
+  const t=e.target.closest('[data-go]'); if(!t) return;
+  const d=t.dataset.go;
+  if(d==='start') return start();
+  if(d==='reset'){ st.seen=new Set(); st.res={}; st.order=[]; st.i=0; st.sel=null; return go('l1'); }
+  go(d);
+});
+render();
+</script>
+</body>
+</html>
